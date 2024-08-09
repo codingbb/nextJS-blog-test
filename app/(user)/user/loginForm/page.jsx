@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
@@ -11,22 +12,34 @@ export default function LoginForm() {
   const loginForm = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      console.log("로그인 성공", result.user);
-      router.push("/"); //리다이렉션
-    } else {
-      alert(result.message);
+    // axios는 헤더 설정 알아서 해줌! (수동 세팅도 가능)
+    try {
+      const response = await axios.post("/api/login", {
+        username,
+        password,
+      });
+    } catch {
+      console.log("errrr");
     }
+
+    // console.log("1111111111 " + response.data);
+
+    // const res = await fetch("/api/login", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ username, password }),
+    // });
+
+    // const result = await res.json();
+
+    // if (result.success) {
+    //   console.log("로그인 성공", result.user);
+    //   // router.push("/"); //리다이렉션
+    // } else {
+    //   alert(result.message);
+    // }
   };
 
   return (

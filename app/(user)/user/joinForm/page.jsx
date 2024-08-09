@@ -1,4 +1,42 @@
+"use client";
+import { useCallback, useEffect, useState } from "react";
+import { debounce, set } from "lodash";
+
 export default function JoinForm() {
+  const [pisSame, setIsSame] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordCheck, setPasswordCheck] = useState(true);
+  const [passConfirm, setPassConfirm] = useState("");
+
+  const handleChange = (e) => {
+    e.preventDefault();
+
+    const { name, value, type, id, files } = e.target;
+    if (id === "password") {
+      setPassword(value);
+    } else if (id === "confirm-password") {
+      setPassConfirm(value);
+    }
+
+    // console.log("imagePath", imagePath);
+  };
+
+  const checkPassword = useCallback(
+    // 실시간 데이터 처리
+    debounce((password) => {
+      if (password !== passConfirm) {
+        setPasswordCheck(false);
+      } else {
+        setPasswordCheck(true);
+      }
+    }, 1000),
+    [password, passConfirm]
+  );
+
+  useEffect(() => {
+    checkPassword(password);
+  }, [password, passConfirm]);
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -26,7 +64,9 @@ export default function JoinForm() {
             <input
               type="password"
               id="password"
+              value={password}
               className="w-full p-2 border border-gray-300 rounded mt-1"
+              onChange={handleChange}
             />
           </div>
 
@@ -37,8 +77,15 @@ export default function JoinForm() {
             <input
               type="password"
               id="confirm-password"
+              value={passConfirm}
               className="w-full p-2 border border-gray-300 rounded mt-1"
+              onChange={handleChange}
             />
+            {!passwordCheck && ( // 뒤에 조건 추가 필요 없음. 인라인 조건부 명령 문법 (바닐라js 표준)
+              <span className="text-red-500 mb-2">
+                비밀번호가 일치하지 않습니다.
+              </span>
+            )}
           </div>
 
           <div className="mb-4">
